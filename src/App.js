@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { ChakraProvider } from "@chakra-ui/react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
 
 function App() {
+
+  const [provider, setProvider] = useState(null)
+  const [signer, setSigner] = useState(null)
+
+  useEffect(() => {
+    const loadProvider = () => {
+      if (window.ethereum == null) {
+        console.log("Metamask not installed")
+      } else {
+        setProvider(new ethers.BrowserProvider(window.ethereum))
+      }
+    }
+    loadProvider() 
+  }, [])
+
+  const loadSigner = async () => {
+    if (provider != null) {
+      setSigner(await provider.getSigner())
+    }
+  }
+
+  useEffect(() => {
+    console.log(provider)
+    console.log(signer)
+  }, [signer])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <BrowserRouter>
+        <Navbar connectWallet={loadSigner}/>
+        <Routes>
+          <Route path="/" element={<div>Home</div>} />
+          <Route path="/about" element={<div>About</div>} />
+          <Route path="/contact" element={<div>Contact Us</div>}/>
+        </Routes>
+      </BrowserRouter>
+    </ChakraProvider>
   );
 }
 
