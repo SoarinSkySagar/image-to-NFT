@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {AiOutlineMenu} from 'react-icons/ai'
 import {
   Drawer,
@@ -10,16 +10,42 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { getAddress, getNetwork } from 'ethers'
+
+const networks = {
+  1: 'Ethereum Mainnet',
+  5: 'Goerli Testnet',
+  4: 'Rinkeby Testnet',
+  11155111: 'Sepolia Testnet',
+  137: 'Polygon Mainnet',
+  80001: 'Mumbai Testnet (Polygon)',
+};
 
 export default function Navbar(props) {
 
-  const {connectWallet} = props
+  const {connectWallet, signer, provider} = props
 
   const location = useLocation()
   const navigate = useNavigate()
 
   const {isOpen, onOpen, onClose} = useDisclosure()
   const btnRef = React.useRef()
+
+  const [address, setAddress] = useState(null)
+  const loadAddress = async () => {
+    if (signer != null) {
+      setAddress(await signer.getAddress())
+    }
+  }
+
+  const [network, setNetwork] = useState(null)
+  const loadNetwork = async () => {
+    setNetwork(await window.ethereum.request({method: 'eth_chainId'}))
+  }
+  useEffect(() => {
+    loadAddress()
+    loadNetwork()
+  }, [signer])
 
   return (
     <>
@@ -32,7 +58,7 @@ export default function Navbar(props) {
         <div onClick={() => navigate('/')} className={`p-5 cursor-pointer ${location.pathname === '/' ? "border-b-2 border-black" : ""}`}>Home</div>
         <div onClick={() => navigate('/about')} className={`p-5 cursor-pointer ${location.pathname === '/about' ? "border-b-2 border-black" : ""}`}>About Us</div>
         <div onClick={() => navigate('/contact')} className={`p-5 cursor-pointer ${location.pathname === '/contact' ? "border-b-2 border-black" : ""}`}>Contact Us</div>
-        <div className='p-3'><div className='bg-white p-2 rounded-full text-orange-500 cursor-pointer' onClick={connectWallet}>Connect Wallet</div></div>
+        <div className='p-3'><div className='bg-white p-2 rounded-full text-orange-500 cursor-pointer' onClick={address != null ? null : connectWallet}>{address === null ? "Connect Wallet" : address.substring(0,6)+'...'+address.substring(36,42)}</div></div>
       </div>
     </div>
 
@@ -44,7 +70,21 @@ export default function Navbar(props) {
 
         <DrawerBody>
 
-          Connect your wallet to see wallet details!
+          {address === null 
+            ? "Connect your wallet to see wallet details!"
+            : <div>
+                <div className='font-bold mt-2'>Wallet Address:</div>
+                {address}
+                <br/>
+                <div className='font-bold mt-3'>Current Network:</div>
+                {networks[parseInt(network, 16)]}
+                <br/>
+                <div className='font-bold mt-3'>ChainID:</div>
+                {parseInt(network, 16)}
+                <br/>
+
+              </div>
+          }
 
         </DrawerBody>
       </DrawerContent>

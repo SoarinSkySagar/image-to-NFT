@@ -34,7 +34,7 @@ function App() {
   return (
     <ChakraProvider>
       <BrowserRouter>
-        <Navbar connectWallet={loadSigner}/>
+        <Navbar connectWallet={loadSigner} signer={signer} provider={provider}/>
         <Routes>
           <Route path="/" element={<div>Home</div>} />
           <Route path="/about" element={<div>About</div>} />
