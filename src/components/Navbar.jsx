@@ -10,6 +10,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { useLocation, useNavigate } from 'react-router-dom'
+// eslint-disable-next-line no-unused-vars
 import { getAddress, getNetwork } from 'ethers'
 
 const networks = {

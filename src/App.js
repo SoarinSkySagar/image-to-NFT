@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
+import Home from "./pages/Home";
 
 function App() {
 
@@ -36,7 +37,7 @@ function App() {
       <BrowserRouter>
         <Navbar connectWallet={loadSigner} signer={signer} provider={provider}/>
         <Routes>
-          <Route path="/" element={<div>Home</div>} />
+          <Route path="/" element={<Home/>} />
           <Route path="/about" element={<div>About</div>} />
           <Route path="/contact" element={<div>Contact Us</div>}/>
         </Routes>
